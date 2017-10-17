@@ -10,6 +10,19 @@ import UIKit
 
 class ViewController: UIViewController {
 
+    @IBOutlet weak var image: UIImageView!
+    
+    let letters = ["c", "e", "t", "y", "s"]
+    
+    
+    @IBAction func pressButton(_ sender: UIButton) {
+        for letter in letters {
+            if sender.currentTitle != letter {
+                print("pruebna")
+            }
+        }
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
