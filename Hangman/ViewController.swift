@@ -29,7 +29,6 @@ class ViewController: UIViewController {
     
     @IBAction func resetButton(_ sender: UIButton) {
         reset(deleteScore: true)
-        
         let appleColor = UIColor(red:14.0/255, green:122.0/255, blue:254.0/255, alpha:1.0)
         
         for button in buttonsUsed {
@@ -76,8 +75,13 @@ class ViewController: UIViewController {
     @IBAction func pressGenerateButton(_ sender: UIButton) {
         generateButton.isEnabled = false
         reset(deleteScore: false)
+        
+        let appleColor = UIColor(red:14.0/255, green:122.0/255, blue:254.0/255, alpha:1.0)
+        
+        for button in buttonsUsed {
+            button.setTitleColor(appleColor, for: .normal)
+        }
     }
-    
     
     override func viewDidLoad() {
         super.viewDidLoad()
