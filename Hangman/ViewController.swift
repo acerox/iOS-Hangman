@@ -12,57 +12,105 @@ class ViewController: UIViewController {
         "noche",
         "dormir"
     ]
-    var secretWord = ""
+    var selectedWord = ""
     var selectedWordPosition: Int = 0
     var useImageNumber: Int = 0
+    var fails: Int = 0
+    var tries: Int = 7
     
-    @IBOutlet weak var bgImage: UIImageView!
-    @IBOutlet weak var printedLetters: UILabel!
+    @IBOutlet weak var hangman: UIImageView!
+    @IBOutlet weak var selectedWordLabel: UILabel!
+    @IBOutlet weak var triesLabel: UILabel!
+    
+    @IBAction func resetButton(_ sender: UIButton) {
+        reset()
+    }
     
     @IBAction func pressButton(_ sender: UIButton) {
         let text: String = sender.currentTitle!
+        var fail: Bool = true
         
         for letter in words[selectedWordPosition].characters {
             if String(letter) == text {
-                useImageNumber += 1
-                printedLetters.text = regenerateSpaces(letter: text)
-                bgImage.image = UIImage(named: "img/" + String(useImageNumber))
+                setTextToLabel(text: regenerateSpaces(letter: text))
+                fail = false
             }
+        }
+        
+        if fail {
+            fails += 1
+            useImageNumber += 1
+            tries -= 1
+            triesLabel.text = String(tries)
+            hangman.image = UIImage(named: "img/" + String(useImageNumber))
+        }
+        
+        if fails == 7 {
+            hangman.image = UIImage(named: "img/lose")
+        }
+        
+        if words[selectedWordPosition] == selectedWord {
+            hangman.image = UIImage(named: "img/win")
         }
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        reset()
+    }
+    
+    func reset() {
+        fails = 0
+        useImageNumber = 0
+        selectedWordPosition = 0
+        selectedWord = ""
+        tries = 7
+        triesLabel.text = String(tries)
         
-        bgImage.image = UIImage(named: "img/0")
-        
-        let randomNum:UInt32 = arc4random_uniform(UInt32(words.count))
-        selectedWordPosition = Int(randomNum)
-        
+        hangman.image = UIImage(named: "img/0")
+        generateWordToUse()
         generateSpaces()
     }
     
+    func generateWordToUse() {
+        selectedWordPosition = randomNumberOfArray(words: words)
+    }
+    
+    func randomNumberOfArray(words: [String]) -> Int {
+        return Int(arc4random_uniform(UInt32(words.count)))
+    }
+    
     func generateSpaces() {
-        var result: String = ""
+        var spaces: String = ""
         
-        for i in words[selectedWordPosition].characters {
-            result += "_ "
-            secretWord += " "
+        for _ in words[selectedWordPosition].characters {
+            spaces += "_ "
+            selectedWord += " "
         }
         
-        printedLetters.text = result
+        setTextToLabel(text: spaces)
+    }
+    
+    
+    
+    func characterAt(s: String, position: Int) -> Character {
+        return s[s.index(s.startIndex, offsetBy: position)]
+    }
+    
+    func setTextToLabel(text: String) {
+        selectedWordLabel.text = text
     }
     
     func regenerateSpaces(letter: String) -> String {
         var result: String = ""
         
         for (index, i) in words[selectedWordPosition].characters.enumerated() {
-            if String(i)  == letter && secretWord[secretWord.index(secretWord.startIndex, offsetBy: index)] == " " {
-                secretWord.insert(i, at: secretWord.index(secretWord.startIndex, offsetBy: index))
-                secretWord.remove(at: secretWord.index(secretWord.startIndex, offsetBy: index + 1))
+            if String(i)  == letter && String(characterAt(s: selectedWord, position: index)) == " " {
+                selectedWord.insert(i, at: selectedWord.index(selectedWord.startIndex, offsetBy: index))
+                selectedWord.remove(at: selectedWord.index(selectedWord.startIndex, offsetBy: index + 1))
                 result += letter + " "
-            } else if secretWord[secretWord.index(secretWord.startIndex, offsetBy: index)] != " " {
-                result += String(secretWord[secretWord.index(secretWord.startIndex, offsetBy: index)]) + " "
+            } else if String(characterAt(s: selectedWord, position: index)) != " " {
+                result += String(characterAt(s: selectedWord, position: index)) + " "
             } else {
                 result += "_ "
             }
