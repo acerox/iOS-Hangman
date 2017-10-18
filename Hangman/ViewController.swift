@@ -19,6 +19,8 @@ class ViewController: UIViewController {
     var tries: Int = 7
     var score: Int = 0
     
+    var buttonsUsed = [UIButton]()
+    
     @IBOutlet weak var hangman: UIImageView!
     @IBOutlet weak var selectedWordLabel: UILabel!
     @IBOutlet weak var triesLabel: UILabel!
@@ -27,9 +29,16 @@ class ViewController: UIViewController {
     
     @IBAction func resetButton(_ sender: UIButton) {
         reset(deleteScore: true)
+        
+        let appleColor = UIColor(red:14.0/255, green:122.0/255, blue:254.0/255, alpha:1.0)
+        
+        for button in buttonsUsed {
+            button.setTitleColor(appleColor, for: .normal)
+        }
     }
     
     @IBAction func pressButton(_ sender: UIButton) {
+        buttonsUsed.append(sender)
         let text: String = sender.currentTitle!
         var fail: Bool = true
         
@@ -113,8 +122,6 @@ class ViewController: UIViewController {
         setTextToLabel(text: spaces)
     }
     
-    
-    
     func characterAt(s: String, position: Int) -> Character {
         return s[s.index(s.startIndex, offsetBy: position)]
     }
@@ -145,7 +152,5 @@ class ViewController: UIViewController {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-
-
 }
 
