@@ -17,32 +17,41 @@ class ViewController: UIViewController {
     var useImageNumber: Int = 0
     var fails: Int = 0
     var tries: Int = 7
+    var score: Int = 0
     
     @IBOutlet weak var hangman: UIImageView!
     @IBOutlet weak var selectedWordLabel: UILabel!
     @IBOutlet weak var triesLabel: UILabel!
+    @IBOutlet weak var scoreLabel: UILabel!
+    @IBOutlet weak var generateButton: UIButton!
     
     @IBAction func resetButton(_ sender: UIButton) {
-        reset()
+        reset(deleteScore: true)
     }
     
     @IBAction func pressButton(_ sender: UIButton) {
         let text: String = sender.currentTitle!
         var fail: Bool = true
         
+        
         for letter in words[selectedWordPosition].characters {
             if String(letter) == text {
                 setTextToLabel(text: regenerateSpaces(letter: text))
                 fail = false
+                score += 10
+                scoreLabel.text = String(score)
             }
         }
         
-        if fail {
+        if fail && fails < 7 {
             fails += 1
             useImageNumber += 1
             tries -= 1
             triesLabel.text = String(tries)
+            sender.setTitleColor(.red, for: .normal)
             hangman.image = UIImage(named: "img/" + String(useImageNumber))
+        } else {
+            sender.setTitleColor(.green, for: .normal)
         }
         
         if fails == 7 {
@@ -51,21 +60,34 @@ class ViewController: UIViewController {
         
         if words[selectedWordPosition] == selectedWord {
             hangman.image = UIImage(named: "img/win")
+            generateButton.isEnabled = true
         }
     }
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        reset()
+    @IBAction func pressGenerateButton(_ sender: UIButton) {
+        generateButton.isEnabled = false
+        reset(deleteScore: false)
     }
     
-    func reset() {
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        reset(deleteScore: true)
+    }
+    
+    func reset(deleteScore: Bool) {
         fails = 0
         useImageNumber = 0
         selectedWordPosition = 0
         selectedWord = ""
         tries = 7
+        
+        if deleteScore {
+            score = 0
+        }
+        
         triesLabel.text = String(tries)
+        scoreLabel.text = String(score)
         
         hangman.image = UIImage(named: "img/0")
         generateWordToUse()
